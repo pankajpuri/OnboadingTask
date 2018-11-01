@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OnboadingTask
+namespace OnboadingTask.Models
 {
     using System;
     using System.Data.Entity;
