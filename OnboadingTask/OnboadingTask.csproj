@@ -180,22 +180,9 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Views\Customers\Create.cshtml" />
     <Content Include="Web.config" />
-    <Content Include="Views\Products\Create.cshtml" />
-    <Content Include="Views\Products\Delete.cshtml" />
-    <Content Include="Views\Products\Details.cshtml" />
-    <Content Include="Views\Products\Edit.cshtml" />
     <Content Include="Views\Products\Index.cshtml" />
-    <Content Include="Views\ProductSolds\Create.cshtml" />
-    <Content Include="Views\ProductSolds\Delete.cshtml" />
-    <Content Include="Views\ProductSolds\Details.cshtml" />
-    <Content Include="Views\ProductSolds\Edit.cshtml" />
     <Content Include="Views\ProductSolds\Index.cshtml" />
-    <Content Include="Views\Stores\Create.cshtml" />
-    <Content Include="Views\Stores\Delete.cshtml" />
-    <Content Include="Views\Stores\Details.cshtml" />
-    <Content Include="Views\Stores\Edit.cshtml" />
     <Content Include="Views\Stores\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
