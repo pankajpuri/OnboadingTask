@@ -1,11 +1,11 @@
-//Load Data in Table when documents is ready
+﻿//Load Data in Table when documents is ready
 $(document).ready(function () {
     loadData();
 });
 //Load Data function
 function loadData() {
     $.ajax({
-        url: "/Customers/GetCustomer",
+        url: "/Stores/GetStore",
         type: "GET",
         contentType: "application/json;charset=utf-8",
         dataType: "JSON",
@@ -35,15 +35,15 @@ function Add() {
     if (res == false) {
         return false;
     }
-   
-    var cusOjb = {
+
+    var strOjb = {
         Id: $('#Id').val(),
         Name: $('#Name').val(),
         Address: $('#Address').val()
     };
     $.ajax({
-        url: "/Customers/Add",
-        data: JSON.stringify(cusOjb),
+        url: "/Stores/Add",
+        data: JSON.stringify(strOjb),
         type: "POST",
         contentType: "application/json;charset=utf-8",
         dataType: "json",
@@ -65,7 +65,7 @@ function getbyID(Id) {
     $('#Name').css('border-color', 'lightgrey');
     $('#Address').css('border-color', 'lightgrey');
     $.ajax({
-        url: "/Customers/getbyID/" + Id,
+        url: "/Stores/getbyID/" + Id,
         typr: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
@@ -85,7 +85,7 @@ function getbyID(Id) {
 
 
 
-   
+
 }
 //function for updating employee's record
 function Update() {
@@ -93,15 +93,15 @@ function Update() {
     if (res == false) {
         return false;
     }
-    
-    var empObj = {
+
+    var strObj = {
         Id: $('#Id').val(),
         Name: $('#Name').val(),
         Address: $('#Address').val(),
     };
     $.ajax({
-        url: "/Customers/Update",
-        data: JSON.stringify(empObj),
+        url: "/Stores/Update",
+        data: JSON.stringify(strObj),
         type: "POST",
         contentType: "application/json;charset=utf-8",
         dataType: "json",
@@ -137,7 +137,7 @@ function Delele(ID) {
     var ans = confirm("Are you sure you want to delete this Record?");
     if (ans) {
         $.ajax({
-            url: "/Customers/Delete/" + ID,
+            url: "/Stores/Delete/" + ID,
             type: "POST",
             contentType: "application/json;charset=UTF-8",
             dataType: "json",
@@ -169,7 +169,7 @@ function validate() {
         $('#Name').css('border-color', 'Red');
 
         isValid = false;
-        
+
     }
     else {
         $('#Name').css('border-color', 'lightgrey');
@@ -182,7 +182,7 @@ function validate() {
     else {
         $('#Address').css('border-color', 'lightgrey');
     }
-    
+
     return isValid;
 }
 

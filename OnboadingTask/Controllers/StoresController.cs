@@ -14,114 +14,45 @@ namespace OnboadingTask.Controllers
     {
         private OnBoad_2018Entities db = new OnBoad_2018Entities();
 
-        // GET: Stores
+        // GET: Index
         public ActionResult Index()
-        {
-            return View(db.Stores.ToList());
-        }
-
-        // GET: Stores/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Store store = db.Stores.Find(id);
-            if (store == null)
-            {
-                return HttpNotFound();
-            }
-            return View(store);
-        }
-
-        // GET: Stores/Create
-        public ActionResult Create()
         {
             return View();
         }
-
-        // POST: Stores/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Address")] Store store)
+        public ActionResult Add(Store store)
         {
-            if (ModelState.IsValid)
-            {
-                db.Stores.Add(store);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(store);
-        }
-
-        // GET: Stores/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Store store = db.Stores.Find(id);
-            if (store == null)
-            {
-                return HttpNotFound();
-            }
-            return View(store);
-        }
-
-        // POST: Stores/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Address")] Store store)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(store).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(store);
-        }
-
-        // GET: Stores/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Store store = db.Stores.Find(id);
-            if (store == null)
-            {
-                return HttpNotFound();
-            }
-            return View(store);
-        }
-
-        // POST: Stores/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Store store = db.Stores.Find(id);
-            db.Stores.Remove(store);
+            var stor = db.Stores.Add(store);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return Json(stor, JsonRequestBehavior.AllowGet);
+
         }
 
-        protected override void Dispose(bool disposing)
+        public JsonResult GetStore(string id)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            List<Store> stores = new List<Store>();
+            stores = db.Stores.ToList();
+            return Json(stores, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetbyID(int ID)
+        {
+            var store = db.Stores.ToList().Find(x => x.Id.Equals(ID));
+            return Json(store, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Update(Store store)
+        {
+            var changedStore = db.Entry(store).State = EntityState.Modified;
+            db.SaveChanges();
+            return Json(changedStore, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Delete(int id)
+        {
+            Store store = db.Stores.Find(id);
+            var removeStore = db.Stores.Remove(store);
+            db.SaveChanges();
+            return Json(removeStore, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

@@ -24,22 +24,8 @@ namespace OnboadingTask.Controllers
         [HttpPost]
         public ActionResult Add(Customer customer)
         {
-            //string message = "SUCCESS";
-            var cust = db.Customers.Add(customer);
-            //try
-            //{
+            var cust = db.Customers.Add(customer);   
             db.SaveChanges();
-            //}
-            //catch (DbEntityValidationException ex)
-            //{
-            //    foreach (var entityValidationErrors in ex.EntityValidationErrors)
-            //    {
-            //        foreach (var validationError in entityValidationErrors.ValidationErrors)
-            //        {
-            //            Response.Write("Property: " + validationError.PropertyName + " Error: " + validationError.ErrorMessage);
-            //        }
-            //    }
-            //}
             return Json(cust, JsonRequestBehavior.AllowGet );
 
         }

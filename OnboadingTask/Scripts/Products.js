@@ -1,11 +1,11 @@
-//Load Data in Table when documents is ready
+﻿//Load Data in Table when documents is ready
 $(document).ready(function () {
     loadData();
 });
 //Load Data function
 function loadData() {
     $.ajax({
-        url: "/Customers/GetCustomer",
+        url: "/Products/GetProduct",
         type: "GET",
         contentType: "application/json;charset=utf-8",
         dataType: "JSON",
@@ -15,7 +15,7 @@ function loadData() {
                 html += '<tr>';
                 html += '<td>' + item.Id + '</td>';
                 html += '<td>' + item.Name + '</td>';
-                html += '<td>' + item.Address + '</td>';
+                html += '<td>' + item.Price + '</td>';
                 html += '<td><a href="#" onclick="return getbyID(' + item.Id + ')">Edit</a> | <a href="#" onclick="Delele(' + item.Id + ')">Delete</a></td>';
                 html += '</tr>';
             });
@@ -35,14 +35,14 @@ function Add() {
     if (res == false) {
         return false;
     }
-   
+
     var cusOjb = {
         Id: $('#Id').val(),
         Name: $('#Name').val(),
-        Address: $('#Address').val()
+        Price: $('#Price').val()
     };
     $.ajax({
-        url: "/Customers/Add",
+        url: "/Products/Add",
         data: JSON.stringify(cusOjb),
         type: "POST",
         contentType: "application/json;charset=utf-8",
@@ -63,16 +63,16 @@ function Add() {
 //Function for getting the Data Based upon Employee ID
 function getbyID(Id) {
     $('#Name').css('border-color', 'lightgrey');
-    $('#Address').css('border-color', 'lightgrey');
+    $('#Price').css('border-color', 'lightgrey');
     $.ajax({
-        url: "/Customers/getbyID/" + Id,
+        url: "/Products/getbyID/" + Id,
         typr: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
         success: function (result) {
             $('#Id').val(result.Id);
             $('#Name').val(result.Name);
-            $('#Address').val(result.Address);
+            $('#Price').val(result.Price);
             $('#myModal').modal('show');
             $('#btnUpdate').show();
             $('#btnAdd').hide();
@@ -85,7 +85,7 @@ function getbyID(Id) {
 
 
 
-   
+
 }
 //function for updating employee's record
 function Update() {
@@ -93,15 +93,15 @@ function Update() {
     if (res == false) {
         return false;
     }
-    
-    var empObj = {
+
+    var prObj = {
         Id: $('#Id').val(),
         Name: $('#Name').val(),
-        Address: $('#Address').val(),
+        Price: $('#Price').val(),
     };
     $.ajax({
-        url: "/Customers/Update",
-        data: JSON.stringify(empObj),
+        url: "/Products/Update",
+        data: JSON.stringify(prObj),
         type: "POST",
         contentType: "application/json;charset=utf-8",
         dataType: "json",
@@ -110,7 +110,7 @@ function Update() {
             $('#myModal').modal('hide');
             $('#Id').val("");
             $('#Name').val("");
-            $('#Address').val("");
+            $('#Price').val("");
         },
         error: function (errormessage) {
             alert(errormessage.responseText);
@@ -124,11 +124,11 @@ function Update() {
 function clearTextBox() {
     $('#Id').val("");
     $('#Name').val("");
-    $('#Address').val("");
+    $('#Price').val("");
     $('#btnUpdate').hide();
     $('#btnAdd').show();
     $('#Name').css('border-color', 'lightgrey');
-    $('#Address').css('border-color', 'lightgrey');
+    $('#Price').css('border-color', 'lightgrey');
 }
 
 
@@ -137,7 +137,7 @@ function Delele(ID) {
     var ans = confirm("Are you sure you want to delete this Record?");
     if (ans) {
         $.ajax({
-            url: "/Customers/Delete/" + ID,
+            url: "/Products/Delete/" + ID,
             type: "POST",
             contentType: "application/json;charset=UTF-8",
             dataType: "json",
@@ -155,11 +155,11 @@ function Delele(ID) {
 function clearTextBox() {
     $('#Id').val("");
     $('#Name').val("");
-    $('#Address').val("");
+    $('#Price').val("");
     $('#btnUpdate').hide();
     $('#btnAdd').show();
     $('#Name').css('border-color', 'lightgrey');
-    $('#Address').css('border-color', 'lightgrey');
+    $('#Price').css('border-color', 'lightgrey');
 }
 
 //Valdidation using jquery
@@ -169,22 +169,19 @@ function validate() {
         $('#Name').css('border-color', 'Red');
 
         isValid = false;
-        
+
     }
     else {
         $('#Name').css('border-color', 'lightgrey');
     }
-    if ($('#Address').val().trim() == "") {
-        $('#Address').css('border-color', 'Red');
+    if ($('#Price').val().trim() == "") {
+        $('#Price').css('border-color', 'Red');
         isValid = false;
 
     }
     else {
-        $('#Address').css('border-color', 'lightgrey');
+        $('#Price').css('border-color', 'lightgrey');
     }
-    
+
     return isValid;
 }
-
-
-
