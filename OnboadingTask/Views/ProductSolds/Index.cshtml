@@ -9,19 +9,14 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
-
-
-    <script src="~/Scripts/jquery-1.12.4.min.js"></script>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/bootstrap.js"></script>
-    <link href="~/Content/bootstrap.css" rel="stylesheet" />
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-    <script src="~/Scripts/knockout-3.4.2.js"></script>
-
 
 </head>
 <body>
-    <h2>Customer Details</h2>
     <div class="container">
 
 
@@ -66,33 +61,29 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding:35px 50px;">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4><span class="glyphicon glyphicon-lock"></span>Sale</h4>
+                        <h4><span class="glyphicon"></span>Sale</h4>
                     </div>
-                    <div class="modal-body" style="padding:40px 50px;">
+                    <div class="modal-body" style="padding:40px;">
                         <form role="form">
-                            <div class="form-group">
-                                <label for="Id">Id</label>
-                                <input type="text" class="form-control" id="Id" placeholder="Id">
-                            </div>
-
+                           
                             <div class="form-group">
                                 <label for="CustomerName">Customer Name</label>
-                                <input type="text" class="form-control" id="CustomerName" placeholder="Customer Name" data-bind='value: txtCustomerName'>
+                                <select type="text" class="form-control" id="CustomerName" placeholder="Customer Name" data-bind='value: txtCustomerName'/>
                                 <p>   <span class="" data-bind="validationMessage: test"></span></p>
 
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group ">
                                 <label for="ProductName">Product Name</label>
-                                <input type="text" class="form-control" id="ProductName" placeholder="Product Name" data-bind='value: txtProductName'>
+                                <select type="text" class="form-control" id="ProductName" placeholder="Product Name" data-bind='value: txtProductName'/>
 
                             </div>
                             <div class="form-group">
                                 <label for="StoreName">Store Name</label>
-                                <input type="text" class="form-control" id="StoreName" placeholder="Store Name" data-bind='value: txtStoreName'>
+                                <select type="text" class="form-control" id="StoreName" placeholder="Store Name" data-bind='value: txtStoreName'/>
 
                             </div>
-                            <div class="form-group">
+                            <div class="form-group ui-datepicker">
                                 <label for="DateSold">Date </label>
                                 <input type="text" class="form-control" id="DateSold" placeholder="Date Sold" data-bind='value: txtDateSold'>
 
@@ -111,7 +102,7 @@
             </div>
         </div>
     </div>
-
+    <script src="~/Scripts/ProductSold.js"></script>
 </body>.
 </html>
 .

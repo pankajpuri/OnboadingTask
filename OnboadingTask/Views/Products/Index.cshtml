@@ -1,5 +1,4 @@
-﻿@model OnboadingTask.Models.Product
-
+﻿@model IEnumerable<OnboadingTask.Models.Product>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,17 +10,17 @@
     <title>Index</title>
 
 
-    <script src="~/Scripts/jquery-1.12.4.min.js"></script>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/bootstrap.js"></script>
-    <link href="~/Content/bootstrap.css" rel="stylesheet" />
-    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-    <script src="~/Scripts/knockout-3.4.2.js"></script>
 
 
 </head>
 <body>
-    <h2>Customer Details</h2>
+    <h2>Product Details</h2>
     <div class="container">
 
 
@@ -39,7 +38,10 @@
                         Price
                     </th>
                     <th>
-
+                        Action(Edit)
+                    </th>
+                    <th>
+                        Action(Delete)
                     </th>
             </thead>
             <tbody class="tbody"></tbody>
@@ -57,30 +59,28 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding:35px 50px;">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4><span class="glyphicon glyphicon-lock"></span>Product Details</h4>
+                        <h4><span class="glyphicon"></span>Product Details</h4>
                     </div>
                     <div class="modal-body" style="padding:40px 50px;">
-                        <form role="form">
-                            <div class="form-group">
-                                <label for="Id">Id</label>
-                                <input type="text" class="form-control" id="Id" placeholder="Id">
-                            </div>
-
+                        <form role="form" id="CustomerForm">
                             <div class="form-group">
                                 <label for="Name">Name</label>
-                                <input type="text" class="form-control" id="Name" placeholder="Name" data-bind='value: txtName'>
-                                <p>   <span class="" data-bind="validationMessage: test"></span></p>
+                                <input type="text" class="form-control" id="Name" placeholder="Name" data-bind="value: Name,valueUpdate: 'keyup'">
 
                             </div>
 
                             <div class="form-group">
                                 <label for="Price">Price</label>
-                                <input type="text" class="form-control" id="Price" placeholder="Price" data-bind='value: txtPrice'>
+                                <input type="text" class="form-control" id="Price" placeholder="Price" data-bind="value: Price,valueUpdate: 'keyup'">
 
                             </div>
+                            <div class="form-group" >
+                                <input type="hidden" class="form-control" id="Id" value="id">
 
+                            </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-bind="click:Add" value="Add" id="btnAdd" onclick="return Add();">Add</button>
+                                <button type="button" class="btn btn-primary" data-bind="enable:Name.isValid() && Price.isValid()" value="Add" id="btnAdd" onclick="return Add();">Add</button>
+                                @*<input type="button" value="Add" class="btn btn-primary" id="btnAdd" data-bind="enable:Name.isValid() && Price.isValid()" />*@
                                 <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
@@ -93,9 +93,12 @@
             </div>
         </div>
     </div>
-
+    <script src="~/Scripts/knockout-3.4.2.debug.js"></script>
+    <script src="~/Scripts/knockout-3.4.2.js"></script>
+    <script src="~/Scripts/knockout.validation.js"></script>
     <script src="~/Scripts/Products.js"></script>
-   
-</body>.
+
+
+</body>
 </html>
-.
+

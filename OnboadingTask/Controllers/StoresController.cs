@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -23,7 +25,24 @@ namespace OnboadingTask.Controllers
         public ActionResult Add(Store store)
         {
             var stor = db.Stores.Add(store);
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
             return Json(stor, JsonRequestBehavior.AllowGet);
 
         }
@@ -41,9 +60,17 @@ namespace OnboadingTask.Controllers
         }
         public JsonResult Update(Store store)
         {
-            var changedStore = db.Entry(store).State = EntityState.Modified;
-            db.SaveChanges();
-            return Json(changedStore, JsonRequestBehavior.AllowGet);
+            try
+            {
+                db.Entry(store).State = EntityState.Modified;
+
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ex.Entries.Single().Reload();
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
         }
         public JsonResult Delete(int id)
         {

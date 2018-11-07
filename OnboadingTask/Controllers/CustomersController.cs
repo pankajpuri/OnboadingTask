@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using OnboadingTask;
 using OnboadingTask.Models;
 
 namespace OnboadingTask.Controllers
@@ -15,7 +15,7 @@ namespace OnboadingTask.Controllers
     public class CustomersController : Controller
     {
         private OnBoad_2018Entities db = new OnBoad_2018Entities();
-        
+
         // GET: Index
         public ActionResult Index()
         {
@@ -24,9 +24,26 @@ namespace OnboadingTask.Controllers
         [HttpPost]
         public ActionResult Add(Customer customer)
         {
-            var cust = db.Customers.Add(customer);   
-            db.SaveChanges();
-            return Json(cust, JsonRequestBehavior.AllowGet );
+            var cust = db.Customers.Add(customer);
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+            return Json(cust, JsonRequestBehavior.AllowGet);
 
         }
 
@@ -43,18 +60,26 @@ namespace OnboadingTask.Controllers
         }
         public JsonResult Update(Customer customer)
         {
-            var changeCustomer = db.Entry(customer).State = EntityState.Modified;
-                   db.SaveChanges();
-            return Json(changeCustomer, JsonRequestBehavior.AllowGet);
+            try
+            {
+                db.Entry(customer).State = EntityState.Modified;
+
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ex.Entries.Single().Reload();
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
         }
         public JsonResult Delete(int id)
         {
             Customer customer = db.Customers.Find(id);
-           var removeCustomer =   db.Customers.Remove(customer);
+            var removeCustomer = db.Customers.Remove(customer);
             db.SaveChanges();
             return Json(removeCustomer, JsonRequestBehavior.AllowGet);
         }
-        
-       
+
+
     }
 }

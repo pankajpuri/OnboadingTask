@@ -5,54 +5,106 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Data.Entity.Validation;
 using System.Web.Mvc;
 using OnboadingTask.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Data.Entity.Infrastructure;
 
 namespace OnboadingTask.Controllers
 {
+
     public class ProductSoldsController : Controller
     {
+        public class ProductSoldViewModel
+        {
+
+            public int Id { get; set; }
+            [Display(Name = "Product")]
+            public long ProductId { get; set; }
+            [Display(Name = "Customer")]
+            public long CustomerId { get; set; }
+            [Display(Name = "Store")]
+            public int StoreId { get; set; }
+            [Display(Name = "Date of Purchase")]
+            // [DisplayFormat(DataFormatString ="{0:mm/dd/yyyy}", ApplyFormatInEditMode =true)]
+            public DateTime DateSold { get; set; }
+        }
         private OnBoad_2018Entities db = new OnBoad_2018Entities();
         // GET: Index
+        // GET: ProductSolds
         public ActionResult Index()
         {
+            var psold = new ProductSold();
+            ViewBag.CustomerId = new SelectList(db.Customers, "Id", "Name", psold.CustomerId);
+            ViewBag.ProductId = new SelectList(db.Products, "Id", "ProductName", psold.ProductId);
+            ViewBag.StoreId = new SelectList(db.Stores, "Id", "StoreName", psold.StoreId);
             return View();
         }
-        [HttpPost]
-        public ActionResult Add(ProductSold productSold)
-        {
-            var cust = db.ProductSolds.Add(productSold);
-            db.SaveChanges();
-            return Json(cust, JsonRequestBehavior.AllowGet);
 
+
+        public JsonResult List()
+        {
+            var productsold = db.ProductSolds.Include(s => s.Customer).Include(s => s.Product).Include(s => s.Store).Select(x => new
+            {
+                Id = x.Id,
+                ProductId = x.Product.Name,
+                CustomerId = x.Customer.Name,
+                StoreId = x.Store.Name,
+                DateSold = x.DateSold
+            }).ToList();
+
+            return Json(productsold, JsonRequestBehavior.AllowGet);
         }
-
-        public JsonResult GetCustomer(string id)
+        public JsonResult Add(ProductSold psold)
         {
-            List<Customer> customers = new List<Customer>();
-            customers = db.Customers.ToList();
-            return Json(customers, JsonRequestBehavior.AllowGet);
+
+
+            db.ProductSolds.Add(psold);
+            db.SaveChanges();
+
+            return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+
         }
         public JsonResult GetbyID(int ID)
         {
-            var customer = db.Customers.ToList().Find(x => x.Id.Equals(ID));
-            return Json(customer, JsonRequestBehavior.AllowGet);
+            var ProductSold = db.ProductSolds.Where(x => x.Id == ID).Select(x => new ProductSoldViewModel
+            {
+                Id = ID,
+                CustomerId = x.CustomerId,
+                DateSold = x.DateSold,
+                StoreId = x.StoreId,
+                ProductId = x.ProductId
+            }).FirstOrDefault();
+            return Json(ProductSold, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult Update(Customer customer)
+        public JsonResult Update(ProductSold psold)
         {
-            var changeCustomer = db.Entry(customer).State = EntityState.Modified;
-            db.SaveChanges();
-            return Json(changeCustomer, JsonRequestBehavior.AllowGet);
+            try
+            {
+                db.Entry(psold).State = EntityState.Modified;
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ex.Entries.Single().Reload();
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
         }
-        public JsonResult Delete(int id)
+        public JsonResult RemoveProduct(long ID)
         {
-            Customer customer = db.Customers.Find(id);
-            var removeCustomer = db.Customers.Remove(customer);
-            db.SaveChanges();
-            return Json(removeCustomer, JsonRequestBehavior.AllowGet);
+            ProductSold psold = db.ProductSolds.Find(ID);
+            db.ProductSolds.Remove(psold);
+            return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
         }
-
-
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
 

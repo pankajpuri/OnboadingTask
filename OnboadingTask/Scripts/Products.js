@@ -1,6 +1,29 @@
-﻿//Load Data in Table when documents is ready
+﻿/// <reference path="bootstrap.min.js" />
+//Load Data in Table when documents is ready
 $(document).ready(function () {
     loadData();
+
+    (function ($) {
+        var contactInfo = {
+            Name: ko.observable($("#Name").val()).extend({
+                minLength: {
+                    params: 2,
+                    message: "Invalid Name , Please Enter Atleast 2 Letters"
+                }, maxLength: 50
+            }),
+            Price: ko.observable($("#Price").val()).extend({
+                minLength: {
+                    params: 2,
+                    message: "Invalid Price , Please Enter Atleast 2 Letters"
+                }, maxLength: 200
+            })
+        };
+
+
+        ko.applyBindings(contactInfo);
+    }($))
+
+    
 });
 //Load Data function
 function loadData() {
@@ -13,10 +36,10 @@ function loadData() {
             var html = '';
             $.each(result, function (key, item) {
                 html += '<tr>';
-                html += '<td>' + item.Id + '</td>';
                 html += '<td>' + item.Name + '</td>';
                 html += '<td>' + item.Price + '</td>';
-                html += '<td><a href="#" onclick="return getbyID(' + item.Id + ')">Edit</a> | <a href="#" onclick="Delele(' + item.Id + ')">Delete</a></td>';
+                html += '<td><a href="#" class="btn btn-warning" onclick="return getbyID(' + item.Id + ')">Edit</a></td>'; 
+                html +='<td> <a href="#"  class="btn btn-danger" onclick="Delele(' + item.Id + ')">Delete</a></td > ';
                 html += '</tr>';
             });
             $('.tbody').html(html);
@@ -51,12 +74,9 @@ function Add() {
             loadData();
             $('#myModal').modal('hide');
         },
-        error: function (ex) {
-            var r = jQuery.parseJSON(response.responseText);
-            alert("Message: " + r.Message);
-            alert("StackTrace: " + r.StackTrace);
-            alert("ExceptionType: " + r.ExceptionType);
-        }
+        error: function (errormessage) {
+            alert(errormessage.responseText);
+        }  
     });
 }
 
@@ -65,7 +85,7 @@ function getbyID(Id) {
     $('#Name').css('border-color', 'lightgrey');
     $('#Price').css('border-color', 'lightgrey');
     $.ajax({
-        url: "/Products/getbyID/" + Id,
+        url: "/Products/getbyID/"+ Id,
         typr: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
@@ -122,7 +142,7 @@ function Update() {
 
 //Function for clearing the textboxes
 function clearTextBox() {
-    $('#Id').val("");
+    //$('#Id').val("");
     $('#Name').val("");
     $('#Price').val("");
     $('#btnUpdate').hide();
@@ -151,16 +171,7 @@ function Delele(ID) {
     }
 }
 
-//Function for clearing the textboxes
-function clearTextBox() {
-    $('#Id').val("");
-    $('#Name').val("");
-    $('#Price').val("");
-    $('#btnUpdate').hide();
-    $('#btnAdd').show();
-    $('#Name').css('border-color', 'lightgrey');
-    $('#Price').css('border-color', 'lightgrey');
-}
+
 
 //Valdidation using jquery
 function validate() {

@@ -6,8 +6,9 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using OnboadingTask;
+using System.Data.Entity.Validation;
 using OnboadingTask.Models;
+using System.Data.Entity.Infrastructure;
 
 namespace OnboadingTask.Controllers
 {
@@ -24,7 +25,24 @@ namespace OnboadingTask.Controllers
         public ActionResult Add(Product product)
         {
             var prod = db.Products.Add(product);
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
             return Json(prod, JsonRequestBehavior.AllowGet);
 
         }
@@ -42,9 +60,24 @@ namespace OnboadingTask.Controllers
         }
         public JsonResult Update(Product product)
         {
-            var changedProduct = db.Entry(product).State = EntityState.Modified;
-            db.SaveChanges();
-            return Json(changedProduct, JsonRequestBehavior.AllowGet);
+            try
+            {
+                db.Entry(product).State = EntityState.Modified;
+
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ex.Entries.Single().Reload();
+                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            }
+            //var changedProduct = db.Entry(product).State = EntityState.Modified;
+            //var productFromDB = db.Products.Where(p => p.Id == product.Id).SingleOrDefault();
+            //productFromDB.Name = product.Name;
+            //productFromDB.Price = product.Price;
+
+            //db.SaveChanges();
+            //return Json(changedProduct, JsonRequestBehavior.AllowGet);
         }
         public JsonResult Delete(int id)
         {

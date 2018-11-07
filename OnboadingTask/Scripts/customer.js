@@ -1,6 +1,29 @@
+/// <reference path="bootstrap.min.js" />
 //Load Data in Table when documents is ready
 $(document).ready(function () {
     loadData();
+    (function ($) {
+        var contactInfo = {
+            Name: ko.observable($("#Name").val()).extend({
+                minLength: {
+                    params: 2,
+                    message: "Invalid Name , Please Enter Atleast 2 Letters"
+                }, maxLength: 50
+            }),
+            Address: ko.observable($("#Address").val()).extend({
+                minLength: {
+                    params: 2,
+                    message: "Invalid Address , Please Enter Atleast 2 Letters"
+                }, maxLength: 200
+            })
+        };
+
+
+        ko.applyBindings(contactInfo);
+    }($))
+   
+
+    
 });
 //Load Data function
 function loadData() {
@@ -13,10 +36,10 @@ function loadData() {
             var html = '';
             $.each(result, function (key, item) {
                 html += '<tr>';
-                html += '<td>' + item.Id + '</td>';
                 html += '<td>' + item.Name + '</td>';
                 html += '<td>' + item.Address + '</td>';
-                html += '<td><a href="#" onclick="return getbyID(' + item.Id + ')">Edit</a> | <a href="#" onclick="Delele(' + item.Id + ')">Delete</a></td>';
+                html += '<td><a href="#" class="btn btn-warning" onclick="return getbyID(' + item.Id + ')">Edit</a></td>';
+                html += '<td> <a href="#"  class="btn btn-danger" onclick="Delele(' + item.Id + ')">Delete</a></td > ';
                 html += '</tr>';
             });
             $('.tbody').html(html);
@@ -29,13 +52,14 @@ function loadData() {
         }
     });
 }
+
 //Add Data Function
 function Add() {
     var res = validate();
     if (res == false) {
         return false;
     }
-   
+
     var cusOjb = {
         Id: $('#Id').val(),
         Name: $('#Name').val(),
@@ -51,15 +75,11 @@ function Add() {
             loadData();
             $('#myModal').modal('hide');
         },
-        error: function (ex) {
-            var r = jQuery.parseJSON(response.responseText);
-            alert("Message: " + r.Message);
-            alert("StackTrace: " + r.StackTrace);
-            alert("ExceptionType: " + r.ExceptionType);
+        error: function (errormessage) {
+            alert(errormessage.responseText);
         }
     });
 }
-
 //Function for getting the Data Based upon Employee ID
 function getbyID(Id) {
     $('#Name').css('border-color', 'lightgrey');
@@ -85,7 +105,7 @@ function getbyID(Id) {
 
 
 
-   
+
 }
 //function for updating employee's record
 function Update() {
@@ -93,7 +113,7 @@ function Update() {
     if (res == false) {
         return false;
     }
-    
+
     var empObj = {
         Id: $('#Id').val(),
         Name: $('#Name').val(),
@@ -112,8 +132,11 @@ function Update() {
             $('#Name').val("");
             $('#Address').val("");
         },
-        error: function (errormessage) {
-            alert(errormessage.responseText);
+        error: function (ex) {
+            var r = jQuery.parseJSON(response.responseText);
+            alert("Message: " + r.Message);
+            alert("StackTrace: " + r.StackTrace);
+            alert("ExceptionType: " + r.ExceptionType);
         }
     });
 }
@@ -122,7 +145,7 @@ function Update() {
 
 //Function for clearing the textboxes
 function clearTextBox() {
-    $('#Id').val("");
+   
     $('#Name').val("");
     $('#Address').val("");
     $('#btnUpdate').hide();
@@ -151,17 +174,6 @@ function Delele(ID) {
     }
 }
 
-//Function for clearing the textboxes
-function clearTextBox() {
-    $('#Id').val("");
-    $('#Name').val("");
-    $('#Address').val("");
-    $('#btnUpdate').hide();
-    $('#btnAdd').show();
-    $('#Name').css('border-color', 'lightgrey');
-    $('#Address').css('border-color', 'lightgrey');
-}
-
 //Valdidation using jquery
 function validate() {
     var isValid = true;
@@ -169,7 +181,7 @@ function validate() {
         $('#Name').css('border-color', 'Red');
 
         isValid = false;
-        
+
     }
     else {
         $('#Name').css('border-color', 'lightgrey');
@@ -182,9 +194,6 @@ function validate() {
     else {
         $('#Address').css('border-color', 'lightgrey');
     }
-    
+
     return isValid;
 }
-
-
-
