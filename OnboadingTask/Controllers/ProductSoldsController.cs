@@ -1,102 +1,103 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Web;
-using System.Data.Entity.Validation;
 using System.Web.Mvc;
 using OnboadingTask.Models;
-using System.ComponentModel.DataAnnotations;
-using System.Data.Entity.Infrastructure;
+using OnboadingTask.ViewModel;
 
 namespace OnboadingTask.Controllers
 {
 
+ 
     public class ProductSoldsController : Controller
     {
-        public class ProductSoldViewModel
-        {
-
-            public int Id { get; set; }
-            [Display(Name = "Product")]
-            public long ProductId { get; set; }
-            [Display(Name = "Customer")]
-            public long CustomerId { get; set; }
-            [Display(Name = "Store")]
-            public int StoreId { get; set; }
-            [Display(Name = "Date of Purchase")]
-            // [DisplayFormat(DataFormatString ="{0:mm/dd/yyyy}", ApplyFormatInEditMode =true)]
-            public DateTime DateSold { get; set; }
-        }
         private OnBoad_2018Entities db = new OnBoad_2018Entities();
-        // GET: Index
         // GET: ProductSolds
+        // GET: ProductSoldsz
         public ActionResult Index()
         {
-            var psold = new ProductSold();
-            ViewBag.CustomerId = new SelectList(db.Customers, "Id", "Name", psold.CustomerId);
-            ViewBag.ProductId = new SelectList(db.Products, "Id", "ProductName", psold.ProductId);
-            ViewBag.StoreId = new SelectList(db.Stores, "Id", "StoreName", psold.StoreId);
-            return View();
-        }
-
-
-        public JsonResult List()
-        {
-            var productsold = db.ProductSolds.Include(s => s.Customer).Include(s => s.Product).Include(s => s.Store).Select(x => new
+            var model = new SalesViewModel()
             {
-                Id = x.Id,
-                ProductId = x.Product.Name,
-                CustomerId = x.Customer.Name,
-                StoreId = x.Store.Name,
-                DateSold = x.DateSold
-            }).ToList();
-
-            return Json(productsold, JsonRequestBehavior.AllowGet);
+                Customers = db.Customers.ToList(),
+                Products = db.Products.ToList(),
+                Stores = db.Stores.ToList(),
+                SalesList = db.ProductSolds.Include(p => p.Customer).Include(p => p.Product).Include(p => p.Store).ToList()
+            };
+            return View(model);
         }
-        public JsonResult Add(ProductSold psold)
+
+        [HttpPost]
+        public ActionResult Index(SalesViewModel model)
         {
-
-
-            db.ProductSolds.Add(psold);
-            db.SaveChanges();
-
-            return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
-
-        }
-        public JsonResult GetbyID(int ID)
-        {
-            var ProductSold = db.ProductSolds.Where(x => x.Id == ID).Select(x => new ProductSoldViewModel
+            if (Convert.ToDateTime(model.ProductSold.DateSold) > DateTime.Now)
             {
-                Id = ID,
-                CustomerId = x.CustomerId,
-                DateSold = x.DateSold,
-                StoreId = x.StoreId,
-                ProductId = x.ProductId
-            }).FirstOrDefault();
-            return Json(ProductSold, JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult Update(ProductSold psold)
-        {
-            try
-            {
-                db.Entry(psold).State = EntityState.Modified;
-                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+                return Json(false);
             }
-            catch (DbUpdateConcurrencyException ex)
+            if (model.ProductSold.Id > 0)
             {
-                ex.Entries.Single().Reload();
-                return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+                ProductSold ps = db.ProductSolds.Where(c => c.Id == model.ProductSold.Id).SingleOrDefault();
+                ps.CustomerId = model.ProductSold.CustomerId;
+                ps.ProductId = model.ProductSold.ProductId;
+                ps.StoreId = model.ProductSold.StoreId;
+                ps.DateSold = model.ProductSold.DateSold;
+                db.SaveChanges();
             }
+            else
+            {
+                ProductSold ps = new ProductSold()
+                {
+                    CustomerId = model.ProductSold.CustomerId,
+                    ProductId = model.ProductSold.ProductId,
+                    StoreId = model.ProductSold.StoreId,
+                    DateSold = model.ProductSold.DateSold
+                };
+
+                db.ProductSolds.Add(ps);
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
         }
-        public JsonResult RemoveProduct(long ID)
+
+
+        // Delete Sale
+        public ActionResult DeleteSale(int saleId)
         {
-            ProductSold psold = db.ProductSolds.Find(ID);
-            db.ProductSolds.Remove(psold);
-            return Json(db.SaveChanges(), JsonRequestBehavior.AllowGet);
+            bool result = false;
+            ProductSold sale = db.ProductSolds.SingleOrDefault(x => x.Id == saleId);
+            if (sale != null)
+            {
+                db.ProductSolds.Remove(sale);
+                db.SaveChanges();
+                result = true;
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+
+        // Update Sale
+        public ActionResult EditSale(int saleId)
+        {
+            ProductSold ps = db.ProductSolds.Where(c => c.Id == saleId).SingleOrDefault();
+            List<Customer> list = db.Customers.ToList();
+            ViewBag.CustomerList = new SelectList(list, "Id", "Name");
+            List<Product> list2 = db.Products.ToList();
+            ViewBag.ProductList = new SelectList(list2, "Id", "Name");
+            List<Store> list3 = db.Stores.ToList();
+            ViewBag.StoreList = new SelectList(list3, "Id", "Name");
+            SalesViewModel model = new SalesViewModel()
+            {
+                ProductSold = ps
+            };
+            return PartialView("EditSale", model);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -107,18 +108,63 @@ namespace OnboadingTask.Controllers
         }
     }
 }
+//    public class ProductSoldsController : Controller
+//    {
 
+//        private OnBoad_2018Entities db = new OnBoad_2018Entities();
 
-
-//// GET: ProductSolds
-//public ActionResult Index()
+//        // GET: ProductSolds
+//        public ActionResult Index()
 //        {
 //            var productSolds = db.ProductSolds.Include(p => p.Customer).Include(p => p.Product).Include(p => p.Store);
-//            return View(productSolds.ToList());
+//           return Json(productSolds.ToList(), JsonRequestBehavior.AllowGet);
 //        }
+//        public JsonResult List()
+//        {
+//            var productsold = db.ProductSolds.Include(s => s.Customer).Include(s => s.Product).Include(s => s.Store).Select(x => new
+//            {
+//                Id = x.Id,
+//                ProductId = x.Product.Name,
+//                CustomerId = x.Customer.Name,
+//                StoreId = x.Store.Name,
+//                DateSold = x.DateSold
+//            }).ToList();
 
-//        // GET: ProductSolds/Details/5
-//        public ActionResult Details(int? id)
+//            return Json(productsold, JsonRequestBehavior.AllowGet);
+//        }
+//        [HttpPost]
+//        public ActionResult Add(ProductSold productSold)
+//        {
+//            var cust = db.ProductSolds.Add(productSold);
+//            try
+//            {
+//                db.SaveChanges();
+//            }
+//            catch (DbEntityValidationException e)
+//            {
+//                foreach (var eve in e.EntityValidationErrors)
+//                {
+//                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+//                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+//                    foreach (var ve in eve.ValidationErrors)
+//                    {
+//                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+//                            ve.PropertyName, ve.ErrorMessage);
+//                    }
+//                }
+//                throw;
+//            }
+//            return Json(cust, JsonRequestBehavior.AllowGet);
+
+//        }
+//        //var productSolds = db.ProductSolds.Include(p => p.Customer).Include(p => p.Product).Include(p => p.Store);
+//        //    return View(productSolds.ToList());
+//        //public JsonResult GetSales(string id)
+//        //{
+
+//        //}
+//            // GET: ProductSolds/Details/5
+//            public ActionResult Details(int? id)
 //        {
 //            if (id == null)
 //            {
@@ -233,4 +279,4 @@ namespace OnboadingTask.Controllers
 //            base.Dispose(disposing);
 //        }
 //    }
-
+//}

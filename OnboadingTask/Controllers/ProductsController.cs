@@ -47,10 +47,17 @@ namespace OnboadingTask.Controllers
 
         }
 
-        public JsonResult GetProduct(string id)
+        public JsonResult GetProduct()
         {
-            List<Product> products = new List<Product>();
-            products = db.Products.ToList();
+            var products = db.Products.Select(x => new
+            {
+                Id = x.Id,
+
+                Name = x.Name,
+                Price = x.Price
+
+            }).ToList();
+
             return Json(products, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetbyID(int ID)

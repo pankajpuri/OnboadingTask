@@ -105,8 +105,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\OnboadingTask.dll" />
-    <Content Include="bin\OnboadingTask.pdb" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -188,11 +186,11 @@
     <Content Include="Scripts\Store.js" />
     <Content Include="Web.config" />
     <Content Include="Views\Products\Index.cshtml" />
-    <Content Include="Views\ProductSolds\Index.cshtml" />
     <Content Include="Views\Stores\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ProductSoldsController.cs" />
     <Compile Include="Models\BoardingEDM.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -210,7 +208,6 @@
     </Compile>
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
-    <Compile Include="Controllers\ProductSoldsController.cs" />
     <Compile Include="Controllers\StoresController.cs" />
     <Compile Include="Models\Customer.cs">
       <DependentUpon>BoardingEDM.tt</DependentUpon>
@@ -228,6 +225,7 @@
     <Compile Include="Models\Store.cs">
       <DependentUpon>BoardingEDM.tt</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\SalesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -245,6 +243,8 @@
     <Content Include="Scripts\knockout.validation.min.js.map" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
+    <Content Include="Views\Shared\Edit.cshtml" />
+    <Content Include="Views\ProductSolds\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

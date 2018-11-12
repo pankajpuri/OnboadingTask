@@ -49,9 +49,16 @@ namespace OnboadingTask.Controllers
 
         public JsonResult GetCustomer(string id)
         {
-            List<Customer> customers = new List<Customer>();
-            customers = db.Customers.ToList();
+            var customers = db.Customers.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Address = x.Address
+
+            }).ToList();
+
             return Json(customers, JsonRequestBehavior.AllowGet);
+           
         }
         public JsonResult GetbyID(int ID)
         {

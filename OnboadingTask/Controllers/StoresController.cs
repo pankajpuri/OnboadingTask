@@ -47,10 +47,16 @@ namespace OnboadingTask.Controllers
 
         }
 
-        public JsonResult GetStore(string id)
+        public JsonResult GetStore()
         {
-            List<Store> stores = new List<Store>();
-            stores = db.Stores.ToList();
+            var stores = db.Stores.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Address = x.Address
+
+            }).ToList();
+
             return Json(stores, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetbyID(int ID)
